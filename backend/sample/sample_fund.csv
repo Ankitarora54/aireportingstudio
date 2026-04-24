@@ -1,0 +1,16 @@
+stock,sector,return
+AAPL,Technology,6.5
+MSFT,Technology,5.8
+NVDA,Technology,9.2
+AMZN,Consumer Discretionary,4.1
+TSLA,Consumer Discretionary,3.5
+GOOGL,Technology,5.0
+META,Technology,6.2
+NFLX,Communication Services,2.8
+ADBE,Technology,4.9
+CRM,Technology,3.7
+JPM,Financials,2.1
+XOM,Energy,3.0
+PFE,Healthcare,1.5
+ABC,Retail,34
+REL,Retail,-50

@@ -1,0 +1,4 @@
+.env
+backend-dev.log
+node_modules/
+uploads/

@@ -1,0 +1,21 @@
+{
+  "name": "ai-reporting-studio-backend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@langchain/openai": "^0.6.16",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.1",
+    "langsmith": "^0.3.68",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.68.1",
+    "pdfkit": "^0.15.0",
+    "puppeteer": "^24.41.0"
+  }
+}

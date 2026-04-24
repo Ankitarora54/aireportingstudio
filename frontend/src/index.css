@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-slate-950 text-slate-100;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+.card {
+  @apply glass rounded-2xl p-5;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08);
+}
+
+.label {
+    @apply text-slate-400 text-sm;
+}
+
+/* ✅ UPDATED */
+.form-label {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-slate-300;
+    width: 9.5rem;          /* consistent width */
+    white-space: nowrap;    /* keep label in one line */
+    text-align: left;
+}
+
+/* ✅ UPDATED */
+.form-row {
+    @apply flex items-center gap-4;
+}
+
+/* textarea alignment fix */
+.form-column {
+    @apply flex flex-col gap-1.5;
+}
+
+.value {
+    @apply text-2xl font-semibold;
+}
+
+.btn {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition bg-indigo-500 hover:bg-indigo-400 text-white;
+}
+
+.input {
+    @apply w-full rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2 text-slate-100;
+}
+
+@media print 
+{
+  .page {
+    page-break-after: always;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+}
+
+@media print {
+  body {
+    zoom: 0.9;
+  }
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-slate-950 text-slate-100;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+.card {
+  @apply glass rounded-2xl p-5;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08);
+}
+
+.label {
+    @apply text-slate-400 text-sm;
+}
+
+.form-label {
+    @apply shrink-0 text-xs font-semibold uppercase tracking-[0.12em] text-slate-300;
+}
+
+.form-row {
+    @apply flex items-center gap-3;
+}
+
+.form-row .form-label {
+    min-width: 7.5rem;
+}
+
+.value {
+    @apply text-2xl font-semibold;
+}
+
+.btn {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition bg-indigo-500 hover:bg-indigo-400 text-white;
+}
+
+.input {
+    @apply w-full rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2 text-slate-100;
+} */
