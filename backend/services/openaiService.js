@@ -10,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const backendEnvPath = path.join(__dirname, '..', '.env');
 const rootEnvPath = path.join(__dirname, '..', '..', '.env');
+const defaultPromptPath = path.join(__dirname, '..', 'prompts', 'commentary.txt');
 
 dotenv.config({ path: rootEnvPath });
 dotenv.config({ path: backendEnvPath, override: true });
@@ -81,6 +82,7 @@ function resolveOpenAiKey() {
 function buildCommentaryConfig() {
   const openAiKey = resolveOpenAiKey();
   const langSmithApiKey = sanitizeEnvValue(process.env.LANGSMITH_API_KEY);
+  const promptPath = resolvePromptPath(process.env.COMMENTARY_PROMPT_FILE);
 
   return {
     model: sanitizeEnvValue(process.env.OPENAI_MODEL) || 'gpt-4o-mini',
@@ -101,9 +103,46 @@ function buildCommentaryConfig() {
       service: 'commentary-generation',
       environment: process.env.NODE_ENV || 'development',
     },
+    promptPath,
     openAiKey,
     langSmithApiKey,
   };
+}
+
+function resolvePromptPath(value) {
+  const promptPath = sanitizeEnvValue(value);
+
+  if (!promptPath) {
+    return defaultPromptPath;
+  }
+
+  if (path.isAbsolute(promptPath)) {
+    return promptPath;
+  }
+
+  return path.resolve(path.join(__dirname, '..'), promptPath);
+}
+
+function readPromptTemplate(promptPath) {
+  return fs.readFileSync(promptPath, 'utf8');
+}
+
+function templateValue(value) {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  return JSON.stringify(value, null, 2);
+}
+
+function fillPromptTemplate(template, values) {
+  return template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (match, key) => {
+    if (!Object.prototype.hasOwnProperty.call(values, key)) {
+      return match;
+    }
+
+    return templateValue(values[key]);
+  });
 }
 
 async function createModel(config) {
@@ -143,21 +182,18 @@ function formatFallback(payload) {
 * Volatility measured ${riskMetrics.volatility.toFixed(2)}% with Sharpe ratio of ${riskMetrics.sharpe_ratio.toFixed(2)}%.`;
 }
 
-function buildPrompt(payload) {
+function buildPrompt(payload, config) {
   const { metrics, riskMetrics, benchmarkData, peerData, fundObjective } = payload;
+  const template = readPromptTemplate(config.promptPath);
 
-  return `You are a senior investment reporting analyst.
-Write concise professional bullet points under:
-1. Fund Summary
-2. Performance vs Benchmark
-3. Peer Comparison
-4. Market Outlook
-
-Fund Objective: ${fundObjective}
-Metrics: ${JSON.stringify(metrics)}
-Risk: ${JSON.stringify(riskMetrics)}
-Benchmark: ${JSON.stringify(benchmarkData)}
-Peers: ${JSON.stringify(peerData)}`;
+  return fillPromptTemplate(template, {
+    fundObjective,
+    metrics,
+    riskMetrics,
+    benchmarkData,
+    peerData,
+    payload,
+  });
 }
 
 function normalizeBulletPoints(rawContent) {
@@ -197,11 +233,39 @@ export function getCommentaryHealth() {
     langSmithApiKeyPresent: Boolean(config.langSmithApiKey),
     backendEnvExists: fs.existsSync(backendEnvPath),
     rootEnvExists: fs.existsSync(rootEnvPath),
+    promptPath: config.promptPath,
+    promptFileExists: fs.existsSync(config.promptPath),
     tracingEnabled: config.tracingEnabled,
     tracingBackground: config.tracingBackground,
     tracingProject: config.tracingProject,
     tracingEndpoint: config.tracingEndpoint,
     tracingWorkspaceIdPresent: Boolean(config.tracingWorkspaceId),
+  };
+}
+
+export function getCommentaryPrompt() {
+  const config = buildCommentaryConfig();
+
+  return {
+    prompt: readPromptTemplate(config.promptPath),
+    promptPath: config.promptPath,
+  };
+}
+
+export function saveCommentaryPrompt(prompt) {
+  if (typeof prompt !== 'string' || !prompt.trim()) {
+    const error = new Error('Prompt cannot be empty.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const config = buildCommentaryConfig();
+  fs.mkdirSync(path.dirname(config.promptPath), { recursive: true });
+  fs.writeFileSync(config.promptPath, prompt.trimEnd() + '\n', 'utf8');
+
+  return {
+    prompt,
+    promptPath: config.promptPath,
   };
 }
 
@@ -226,8 +290,7 @@ export async function generateCommentary(payload) {
 
         return model.invoke(
           [
-            ['system', 'You are a professional investment reporting analyst.'],
-            ['human', buildPrompt(commentaryPayload)],
+            ['human', buildPrompt(commentaryPayload, config)],
           ],
           {
             tags: config.tracingTags,

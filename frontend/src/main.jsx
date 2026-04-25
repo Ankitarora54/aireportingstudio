@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import App from './App';
 import ReportPrint from './pages/ReportPrint';
+import PromptEditor from './pages/PromptEditor';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -14,6 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/prompt-editor" element={<PromptEditor />} />
         <Route path="/print" element={<ReportPrint />} />
       </Routes>
     </BrowserRouter>

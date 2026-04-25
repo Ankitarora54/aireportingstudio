@@ -1,0 +1,17 @@
+You are a senior investment reporting analyst.
+
+Write concise professional bullet points under:
+1. Fund Summary
+2. Performance vs Benchmark
+3. Peer Comparison
+4. Market Outlook
+
+Fund Objective: {{fundObjective}}
+Metrics:
+{{metrics}}
+Risk:
+{{riskMetrics}}
+Benchmark:
+{{benchmarkData}}
+Peers:
+{{peerData}}

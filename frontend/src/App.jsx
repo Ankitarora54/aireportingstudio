@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from './lib/api';
 import { buildReportPayload } from './lib/reportPayload';
 import KpiCard from './components/dashboard/KpiCard';
 import ValidationPanel from './components/dashboard/ValidationPanel';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
-import { Upload, FileDown, Sparkles } from 'lucide-react';
+import { Upload, FileDown, Sparkles, PencilLine } from 'lucide-react';
 
 const CHART_COLORS = [
   "#6366F1", // indigo
@@ -222,7 +223,7 @@ return <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba
                     </BarChart>
                   </ResponsiveContainer>
 
-                  </div>}{portfolio&&activeTab==='Commentary'&&<div className="space-y-4"><div className="card"><div className="flex items-center justify-between"><div className="font-semibold">AI Commentary</div><button className="btn" onClick={generateCommentary}><Sparkles className="w-4 h-4 mr-2"/>{loading?'Generating...':'Generate Commentary'}</button></div></div>{commentary&&<><div className="card whitespace-pre-wrap leading-7 text-slate-200">{commentary}</div><div className="card"><div className="font-semibold mb-3">Email-ready Commentary</div><textarea className="input min-h-56" value={`Subject: ${fundName} - ${reportPeriod} Fund Commentary\n\nDear Client,\n\n${commentary}\n\nRegards,\nInvestment Reporting Team`} readOnly /></div></>}</div>}{portfolio&&activeTab==='PDF Export'&&<div className="card"><div className="font-semibold mb-4">Export Factsheet</div><button className="btn" onClick={downloadPdf} disabled={loading}><FileDown className="w-4 h-4 mr-2"/>{loading?'Preparing PDF...':'Download PDF'}</button></div>}
+                  </div>}{portfolio&&activeTab==='Commentary'&&<div className="space-y-4"><div className="card"><div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div className="font-semibold">AI Commentary</div><div className="flex flex-wrap gap-2"><button className="btn" onClick={generateCommentary}><Sparkles className="w-4 h-4 mr-2"/>{loading?'Generating...':'Generate Commentary'}</button><Link className="btn" to="/prompt-editor"><PencilLine className="w-4 h-4 mr-2"/>Edit Prompt</Link></div></div></div>{commentary&&<><div className="card whitespace-pre-wrap leading-7 text-slate-200">{commentary}</div><div className="card"><div className="font-semibold mb-3">Email-ready Commentary</div><textarea className="input min-h-56" value={`Subject: ${fundName} - ${reportPeriod} Fund Commentary\n\nDear Client,\n\n${commentary}\n\nRegards,\nInvestment Reporting Team`} readOnly /></div></>}</div>}{portfolio&&activeTab==='PDF Export'&&<div className="card"><div className="font-semibold mb-4">Export Factsheet</div><button className="btn" onClick={downloadPdf} disabled={loading}><FileDown className="w-4 h-4 mr-2"/>{loading?'Preparing PDF...':'Download PDF'}</button></div>}
               </main>
             </div>
           </div>
