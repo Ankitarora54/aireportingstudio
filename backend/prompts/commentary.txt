@@ -5,6 +5,7 @@ Write concise professional bullet points under:
 2. Performance vs Benchmark
 3. Peer Comparison
 4. Market Outlook
+5. Risk Commentary
 
 Fund Objective: {{fundObjective}}
 Metrics:

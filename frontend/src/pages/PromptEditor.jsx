@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Check, Save } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { api } from '../lib/api';
 
 const promptSections = [
@@ -49,7 +49,7 @@ const defaultSelectedBlocks = dataBlocks.reduce(
   {}
 );
 
-function buildPrompt(selectedSections, selectedBlocks) {
+function buildPrompt(selectedSections, selectedBlocks, exampleCommentary = '') {
   const sections = promptSections
     .filter((section) => selectedSections[section.id])
     .map((section) => section.text);
@@ -65,20 +65,24 @@ function buildPrompt(selectedSections, selectedBlocks) {
     ...sections,
     '',
     ...blocks,
+    ...(exampleCommentary.trim()
+      ? ['', 'Example commentary style/reference:', exampleCommentary.trim()]
+      : []),
   ].join('\n');
 }
 
 export default function PromptEditor() {
   const [selectedSections, setSelectedSections] = useState(defaultSelectedSections);
   const [selectedBlocks, setSelectedBlocks] = useState(defaultSelectedBlocks);
+  const [exampleCommentary, setExampleCommentary] = useState('');
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const generatedPrompt = useMemo(
-    () => buildPrompt(selectedSections, selectedBlocks),
-    [selectedSections, selectedBlocks]
+    () => buildPrompt(selectedSections, selectedBlocks, exampleCommentary),
+    [selectedSections, selectedBlocks, exampleCommentary]
   );
 
   useEffect(() => {
@@ -109,6 +113,13 @@ export default function PromptEditor() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      setPrompt(generatedPrompt);
+      setSaved(false);
+    }
+  }, [generatedPrompt, loading]);
+
   const toggleSection = (id) => {
     setSelectedSections((current) => ({ ...current, [id]: !current[id] }));
     setSaved(false);
@@ -116,11 +127,6 @@ export default function PromptEditor() {
 
   const toggleBlock = (id) => {
     setSelectedBlocks((current) => ({ ...current, [id]: !current[id] }));
-    setSaved(false);
-  };
-
-  const useGeneratedPrompt = () => {
-    setPrompt(generatedPrompt);
     setSaved(false);
   };
 
@@ -187,10 +193,21 @@ export default function PromptEditor() {
               </div>
             </div>
 
-            <button className="btn w-full" onClick={useGeneratedPrompt}>
-              <Check className="w-4 h-4 mr-2" />
-              Generate Prompt
-            </button>
+            <div>
+              <label htmlFor="example-commentary" className="font-semibold mb-3 block">
+                Example Commentary
+              </label>
+              <textarea
+                id="example-commentary"
+                className="input min-h-40 text-sm leading-6"
+                value={exampleCommentary}
+                onChange={(event) => {
+                  setExampleCommentary(event.target.value);
+                  setSaved(false);
+                }}
+                placeholder="Paste an example commentary style or wording reference..."
+              />
+            </div>
           </aside>
 
           <main className="card space-y-4">
